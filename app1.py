@@ -7,9 +7,16 @@ import nltk
 def main(file1):
 
     # Declare function scope variables
+
+    # Sentences length list
     sentenceLens = []
     # Sentences token length sum
     sumST = 0
+
+    # Tokens length list
+    tokensLens = []
+    # Tokens characters length sum
+    sumTL = 0
 
     #open the first file
     inputFile= codecs.open(file1, 'r', 'utf-8')
@@ -22,22 +29,33 @@ def main(file1):
     #tokenize in words
     tokens = nltk.word_tokenize(rawFile)
 
+    # Create a list to store Sentences length
     for sentence in sentences:
-    #    print(sentence.encode('utf-8'))
         #tokenize Sentences in words
         sentenceTokens = nltk.word_tokenize(sentence)
-    #    print(sentenceTokens)
-    #    print("------------------")
         # add sentence token numbers to function scope list
         sentenceLens.append(len(sentenceTokens))
 
+    # sum all Sentences length together 
     for length in sentenceLens:
         sumST += length
         
     # Sentences average length
     sentenceAvgLen = sumST / len(sentenceLens)
 
-        
+
+
+    # Create a list to store tokens length
+    for token in tokens:
+        tokensLens.append(len(token))
+ 
+    # sum all tokens length together 
+    for length in tokensLens:
+        sumTL += length
+               
+    # Tokens average length
+    tokensAvgLen = sumTL / len(tokensLens)
+
 #
 #    for token in tokens:
 #        print(token.encode('utf-8'))
@@ -49,8 +67,8 @@ def main(file1):
 #    print ("sentences lenght: ", sentenceLens, len(sentenceLens))
 
     print ("Sentences: ", len(sentences))
+    print ("Sentences average length: ", sentenceAvgLen)
     print ("Tokens: ", len(tokens))
-    print ("sentences average length: ", sentenceAvgLen)
-
+    print ("Tokens average length: ", tokensAvgLen)
 
 main(sys.argv[1])
