@@ -90,9 +90,9 @@ def vocabCal(tokens, interval):
 
     return finaleList
 
-####################
-# Calculate HAPAX  #
-####################
+##########################################
+# Calculate HAPAX based on Token Numbers #
+##########################################
 def hapaxCal(tokens, interval):
 
     # Where to start each iteration
@@ -121,11 +121,37 @@ def hapaxCal(tokens, interval):
             if tokenFreq == 1:
                 hapax.append(token)
 
+        # Calculate distribution |V1|/|C|
         hapaxLen.append("{:.5f}".format(len(hapax)/len(tokens)))
 
     finaleList = [tokenSize, hapaxLen]
 
     return finaleList
+
+
+############################################
+# The relation between nouns and verbs #
+############################################
+def NounVerb(tokens):
+
+    Nouns = []
+    Verbs = []
+
+    # POS-Tagging all tokens of the test  
+    PosTags = nltk.pos_tag(tokens)
+    
+    # Finding nouns and verbs
+    for token in PosTags:
+        if token[1] in ['NN','NNS','NP','NPS']:
+            Nouns.append(token)
+        elif token[1] in ['VB','VBD','VBG','VBN','VBP','VBZ']:
+            Verbs.append(token)
+
+    relation = "{:.5f}".format(len(Nouns)/len(Verbs))
+    finaleList = [len(Nouns), len(Verbs), relation]
+
+    return finaleList
+
 
 ######################
 # The Main Function  #
@@ -151,6 +177,11 @@ def main(file1,file2):
     tokens2 = nltk.word_tokenize(rawFile2)
 
 
+
+    ############################################
+    ############## Basic Analysis ##############
+    ############################################
+
     sentenceAvgLen1 = sentencesLenCal(sentences1)
     tokensAvgLen1 = tokensLenCal(tokens1)
 
@@ -173,6 +204,12 @@ def main(file1,file2):
     # Print out the basic table
     print(basicT.get_string(title=" B A S I C      A N A L Y S I S"))
 
+    #------------------------------------------#
+
+
+    ############################################
+    ############## Vocabulary Analysis #########
+    ############################################
 
     # Calculating vocabulary size
     vocabSize1 = vocabCal(tokens1, 5000)
@@ -205,6 +242,12 @@ def main(file1,file2):
     # Print out the basic table
     print(vocabT.get_string(title=" V O C A B U L A R Y    S I Z E"))
 
+    #------------------------------------------#
+
+
+    ############################################
+    ############## Hapax Analysis ##############
+    ############################################
 
     # Calculating hapax distribution
     hapaxDest1 = hapaxCal(tokens1, 5000)
@@ -231,11 +274,6 @@ def main(file1,file2):
                 hapaxDest1[0].append(hapaxDest2[0][i])
                 hapaxDest1[1].append("-")
 
-#    print(hapaxDest1[0])
-#    print(hapaxDest2[0])
-#    print(hapaxDest1[1])
-#    print(hapaxDest2[1])
-#
     # Filling table's rows
     for i in range (len(hapaxDest1[0])):
         hapaxT.add_row([hapaxDest1[0][i], hapaxDest1[1][i], hapaxDest2[1][i]])
@@ -243,6 +281,31 @@ def main(file1,file2):
     # Print out the basic table
     print(hapaxT.get_string(title="H A P A X    DISTRIBUTION"))
 
+    #------------------------------------------#
+
+
+
+    ############################################
+    ######## Nouns and Verbs relation ##########
+    ############################################
+
+    # Calculating relation for each text
+    NV1 = NounVerb(tokens1)
+    NV2 = NounVerb(tokens2)
+
+    # Initializing pretty table
+    NVT = PrettyTable()
+    
+    # Adding table's columns
+    NVT.field_names = ["File", "Nouns", "Verbs", "Relation"]
+
+    # Filling table's rows
+    NVT.add_row([file1[6:-4], NV1[0], NV1[1], NV1[2]])
+    NVT.add_row([len(file1[6:-4])*"-", "", "", ""])
+    NVT.add_row([file2[6:-4], NV2[0], NV2[1], NV2[2]])
+
+    # Print out the basic table
+    print(NVT.get_string(title="NOUNS AND VERBS RELATION"))
 
 
 main(sys.argv[1], sys.argv[2])
