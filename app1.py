@@ -90,6 +90,43 @@ def vocabCal(tokens, interval):
 
     return finaleList
 
+####################
+# Calculate HAPAX  #
+####################
+def hapaxCal(tokens, interval):
+
+    # Where to start each iteration
+    startPoint = 0
+
+    # Tokens size
+    tokenSize = []
+
+    # List of HAPAX
+    hapax = []
+
+    # List of HAPAX Length
+    hapaxLen = []
+
+    # Iterating in tokens' list by interval
+    for tokenNum in range (interval, len(tokens), interval):
+
+        tokenPortion = tokens[startPoint:tokenNum]
+        vocabList = set(tokenPortion)
+        tokenSize.append(tokenNum)
+
+        startPoint = tokenNum + 1
+
+        for token in vocabList:
+            tokenFreq = tokenPortion.count(token)
+            if tokenFreq == 1:
+                hapax.append(token)
+
+        hapaxLen.append("{:.5f}".format(len(hapax)/len(tokens)))
+
+    finaleList = [tokenSize, hapaxLen]
+
+    return finaleList
+
 ######################
 # The Main Function  #
 ######################
@@ -133,7 +170,6 @@ def main(file1,file2):
     basicT.add_row(["Sentences", len(sentences1), len(sentences2)])
     basicT.add_row(["Tokens average length", "{:.2f}".format(tokensAvgLen1), "{:.2f}".format(tokensAvgLen2)])
     basicT.add_row(["Sentences average length", "{:.2f}".format(sentenceAvgLen1), "{:.2f}".format(sentenceAvgLen2)])
-
     # Print out the basic table
     print(basicT.get_string(title=" B A S I C      A N A L Y S I S"))
 
@@ -141,7 +177,6 @@ def main(file1,file2):
     # Calculating vocabulary size
     vocabSize1 = vocabCal(tokens1, 5000)
     vocabSize2 = vocabCal(tokens2, 5000)
-
 
     # Initializing pretty table
     vocabT = PrettyTable()
@@ -158,7 +193,6 @@ def main(file1,file2):
         for i in range (intervalSize2, intervalSize1):
             vocabSize2[0].append(vocabSize1[0][i])
             vocabSize2[1].append("-")
-            
     else:
         for i in range (intervalSize1, intervalSize2):
                 vocabSize1[0].append(vocabSize2[0][i])
@@ -170,6 +204,44 @@ def main(file1,file2):
 
     # Print out the basic table
     print(vocabT.get_string(title=" V O C A B U L A R Y    S I Z E"))
+
+
+    # Calculating hapax distribution
+    hapaxDest1 = hapaxCal(tokens1, 5000)
+    hapaxDest2 = hapaxCal(tokens2, 5000)
+
+    # Initializing pretty table
+    hapaxT = PrettyTable()
+    
+    # Adding table's columns
+    hapaxT.field_names = ["Tokens", file1[6:-4], file2[6:-4]]
+
+
+    # Find the bigger text size
+    hapaxSize1 = len(hapaxDest1[0])
+    hapaxSize2 = len(hapaxDest2[0])
+
+    # synchronizing lists to show in a uniq table
+    if hapaxSize1 > hapaxSize2:
+        for i in range (hapaxSize2, hapaxSize1):
+            hapaxDest2[0].append(hapaxDest1[0][i])
+            hapaxDest2[1].append("-")
+    else:
+        for i in range (hapaxSize1, hapaxSize2):
+                hapaxDest1[0].append(hapaxDest2[0][i])
+                hapaxDest1[1].append("-")
+
+#    print(hapaxDest1[0])
+#    print(hapaxDest2[0])
+#    print(hapaxDest1[1])
+#    print(hapaxDest2[1])
+#
+    # Filling table's rows
+    for i in range (len(hapaxDest1[0])):
+        hapaxT.add_row([hapaxDest1[0][i], hapaxDest1[1][i], hapaxDest2[1][i]])
+
+    # Print out the basic table
+    print(hapaxT.get_string(title="H A P A X    DISTRIBUTION"))
 
 
 
