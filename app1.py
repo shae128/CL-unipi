@@ -3,6 +3,9 @@
 import sys
 import codecs
 import nltk
+from prettytable import PrettyTable
+
+
 
 # Calculate Sentences' length
 def sentencesLenCal(sentences):
@@ -93,17 +96,33 @@ def main(file1,file2):
 #    print(tokens)
 #    print ("sentences lenght: ", sentenceLens, len(sentenceLens))
 
-    print ("The Adventures Of Sherlock Holmes: ")
-    print ("Sentences: ", len(sentences1))
-    print ("Sentences average length: ", sentenceAvgLen1)
-    print ("Tokens: ", len(tokens1))
-    print ("Tokens average length: ", tokensAvgLen1)
-    print ("#############################################")
-    print ("The Time Machine: ")
-    print ("Sentences: ", len(sentences2))
-    print ("Sentences average length: ", sentenceAvgLen2)
-    print ("Tokens: ", len(tokens2))
-    print ("Tokens average length: ", tokensAvgLen2)
 
+    # Initializing pretty table
+    basicT = PrettyTable()
+    
+    # Adding table's columns
+    basicT.field_names = ["Metrics", "The Adventures Of Sherlock Holmes", "The Time Machine"]
+
+    # Filling table's rows
+    basicT.add_row(["Tokens", len(tokens1), len(tokens2)])
+    basicT.add_row(["Sentences", len(sentences1), len(sentences2)])
+    basicT.add_row(["Tokens average length", "{:.2f}".format(tokensAvgLen1), "{:.2f}".format(tokensAvgLen2)])
+    basicT.add_row(["Sentences average length", "{:.2f}".format(sentenceAvgLen1), "{:.2f}".format(sentenceAvgLen2)])
+
+    # Print out the basic table
+    print(basicT.get_string(title=" B A S I C      A N A L Y S I S"))
+#
+#    print ("The Adventures Of Sherlock Holmes: ")
+#    print ("Sentences: ", len(sentences1))
+#    print ("Sentences average length: ", sentenceAvgLen1)
+#    print ("Tokens: ", len(tokens1))
+#    print ("Tokens average length: ", tokensAvgLen1)
+#    print ("#############################################")
+#    print ("The Time Machine: ")
+#    print ("Sentences: ", len(sentences2))
+#    print ("Sentences average length: ", sentenceAvgLen2)
+#    print ("Tokens: ", len(tokens2))
+#    print ("Tokens average length: ", tokensAvgLen2)
+#
 
 main(sys.argv[1], sys.argv[2])
