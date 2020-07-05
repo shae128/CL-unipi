@@ -7,7 +7,9 @@ from prettytable import PrettyTable
 
 
 
-# Calculate Sentences' length
+###############################
+# Calculate Sentences' length #
+###############################
 def sentencesLenCal(sentences):
 
     ######################################
@@ -36,12 +38,11 @@ def sentencesLenCal(sentences):
     return sentenceAvgLen
 
 
-# Calculate tokens' length
+############################
+# Calculate tokens' length #
+############################
 def tokensLenCal(tokens):
 
-    ######################################
-    # Declare function's scope variables #
-    ######################################
 
     # Tokens length list
     tokensLens = []
@@ -59,8 +60,39 @@ def tokensLenCal(tokens):
     # Tokens average length
     return sumTL / len(tokensLens)
 
+###############################################
+# Calculate Vocabulary based on Token Numbers #
+###############################################
+def vocabCal(tokens, interval):
 
+    # List of Vocabulary sizes
+    vocabSize = []
+    # Tokens size
+    tokenSize = []
 
+    lastPart = 0
+
+    # Iterating in tokens' list by interval
+    for tokenNum in range (interval, len(tokens), interval):
+        vocabList = set(tokens[:tokenNum])
+        tokenSize.append(tokenNum)
+        vocabSize.append(len(vocabList))
+        lastPart += tokenNum
+
+    # If tokens' number is not dividable by interval 
+    # Then add also the last part which
+#    if lastPart != len(tokens):
+#        vocabList = set(tokens)
+#        tokenSize.append(len(tokens))
+#        vocabSize.append(len(vocabList))
+
+    finaleList = [tokenSize, vocabSize]
+
+    return finaleList
+
+######################
+# The Main Function  #
+######################
 def main(file1,file2):
 
     #open files
@@ -84,24 +116,17 @@ def main(file1,file2):
 
     sentenceAvgLen1 = sentencesLenCal(sentences1)
     tokensAvgLen1 = tokensLenCal(tokens1)
-#
+
+
     sentenceAvgLen2 = sentencesLenCal(sentences2)
     tokensAvgLen2 = tokensLenCal(tokens2)
-#    for token in tokens:
-#        print(token.encode('utf-8'))
-#        print("------------------")
-#        print("------------------")
-#
-#    print(sentences)
-#    print(tokens)
-#    print ("sentences lenght: ", sentenceLens, len(sentenceLens))
 
 
     # Initializing pretty table
     basicT = PrettyTable()
     
     # Adding table's columns
-    basicT.field_names = ["Metrics", "The Adventures Of Sherlock Holmes", "The Time Machine"]
+    basicT.field_names = ["Metrics", file1[6:-4], file2[6:-4]]
 
     # Filling table's rows
     basicT.add_row(["Tokens", len(tokens1), len(tokens2)])
@@ -111,18 +136,41 @@ def main(file1,file2):
 
     # Print out the basic table
     print(basicT.get_string(title=" B A S I C      A N A L Y S I S"))
-#
-#    print ("The Adventures Of Sherlock Holmes: ")
-#    print ("Sentences: ", len(sentences1))
-#    print ("Sentences average length: ", sentenceAvgLen1)
-#    print ("Tokens: ", len(tokens1))
-#    print ("Tokens average length: ", tokensAvgLen1)
-#    print ("#############################################")
-#    print ("The Time Machine: ")
-#    print ("Sentences: ", len(sentences2))
-#    print ("Sentences average length: ", sentenceAvgLen2)
-#    print ("Tokens: ", len(tokens2))
-#    print ("Tokens average length: ", tokensAvgLen2)
-#
+
+
+    # Calculating vocabulary size
+    vocabSize1 = vocabCal(tokens1, 5000)
+    vocabSize2 = vocabCal(tokens2, 5000)
+
+
+    # Initializing pretty table
+    vocabT = PrettyTable()
+    
+    # Adding table's columns
+    vocabT.field_names = ["Tokens", file1[6:-4], file2[6:-4]]
+
+    # Find the bigger text size
+    intervalSize1 = len(vocabSize1[0]) 
+    intervalSize2 = len(vocabSize2[0]) 
+
+    # synchronizing lists to show in a uniq table
+    if intervalSize1 > intervalSize2:
+        for i in range (intervalSize2, intervalSize1):
+            vocabSize2[0].append(vocabSize1[0][i])
+            vocabSize2[1].append("-")
+            
+    else:
+        for i in range (intervalSize1, intervalSize2):
+                vocabSize1[0].append(vocabSize2[0][i])
+                vocabSize1[1].append("-")
+
+    # Filling table's rows
+    for i in range (len(vocabSize1[0])):
+        vocabT.add_row([vocabSize1[0][i], vocabSize1[1][i], vocabSize2[1][i]])
+
+    # Print out the basic table
+    print(vocabT.get_string(title=" V O C A B U L A R Y    S I Z E"))
+
+
 
 main(sys.argv[1], sys.argv[2])
