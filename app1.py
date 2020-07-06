@@ -129,9 +129,9 @@ def hapaxCal(tokens, interval):
     return finaleList
 
 
-############################################
+########################################
 # The relation between nouns and verbs #
-############################################
+########################################
 def NounVerb(tokens):
 
     Nouns = []
@@ -152,6 +152,43 @@ def NounVerb(tokens):
 
     return finaleList
 
+
+########################################
+############## Top 10 PoS ##############
+########################################
+def topTenPoS(tokens):
+
+    PosTags = nltk.pos_tag(tokens)
+
+    # to hold PoS itselves instead of tuples
+    justPoS = []
+
+    # To hold all PoS types except punctuations
+    UniqPoS = []
+
+    # To hold freq on any PoS
+    PosFreq = {}
+
+    # Sorted PoS Dictionary
+    sortedPoS = {}
+
+    for PoS in PosTags:
+        # remove punctuations
+        if not PoS[1] in [",",".",";",":","-","_","[","]","{","}","'","?","(",")",'"',"''","``","!","$","#"]:
+            justPoS.append(PoS[1])
+
+    # remove conflicts
+    UniqPoS = set(justPoS)
+
+    # Calculate each PoS freq
+    for PoS in UniqPoS:
+        posCount = justPoS.count(PoS)
+        PosFreq[PoS] = posCount
+
+    # Sort PoS Dictionary based on Values
+    sortedPoS = sorted(PosFreq.items(), key=lambda x: x[1], reverse=True)
+
+    return sortedPoS 
 
 ######################
 # The Main Function  #
@@ -306,6 +343,34 @@ def main(file1,file2):
 
     # Print out the basic table
     print(NVT.get_string(title="NOUNS AND VERBS RELATION"))
+
+    #------------------------------------------#
+
+
+
+    ############################################
+    ################ Top Ten PoS ###############
+    ############################################
+
+
+    # Find all PoS sorted by Freq 
+    PoS1= topTenPoS(tokens1)
+    PoS2= topTenPoS(tokens2)
+
+    # Initializing pretty table
+    PoST = PrettyTable()
+    
+    # Adding table's columns
+    PoST.field_names = ["Rate", file1[6:-4], file2[6:-4]]
+
+    # Filling table's rows
+    for i in range(0,10):
+        temp1 = PoS1[i][0] + ":   " + str(PoS1[i][1])
+        temp2 = PoS2[i][0] + ":   " + str(PoS2[i][1])
+        PoST.add_row([i+1, temp1, temp2])
+
+    # Print out the basic table
+    print(PoST.get_string(title="TOP TEN   P o S "))
 
 
 main(sys.argv[1], sys.argv[2])
