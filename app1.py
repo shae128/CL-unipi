@@ -11,6 +11,19 @@ from prettytable import PrettyTable
 def orderDic(dic):
     return sorted(dic.items(), key=lambda x: x[1], reverse=True)
 
+
+###############################
+###### Remove punctuations####3
+###############################
+def removePunc(tokens):
+    noPunc = []
+    for token in tokens:
+        if not token in [",",".",";",":","-","_","[","]","{","}","'","?","(",")",'"',"''","``","!","$","#"]:
+            noPunc.append(token)
+
+    return noPunc
+
+
 ###############################
 # Calculate Sentences' length #
 ###############################
@@ -160,7 +173,11 @@ def NounVerb(tokens):
 ########################################
 def topTenPoS(tokens):
 
-    PosTags = nltk.pos_tag(tokens)
+    # remove punctuations
+    noPunctTokens = removePunc(tokens)
+
+    # PoS Tagging 
+    PosTags = nltk.pos_tag(noPunctTokens)
 
     # to hold PoS itselves instead of tuples
     justPoS = []
@@ -175,9 +192,7 @@ def topTenPoS(tokens):
     sortedPoS = {}
 
     for PoS in PosTags:
-        # remove punctuations
-        if not PoS[1] in [",",".",";",":","-","_","[","]","{","}","'","?","(",")",'"',"''","``","!","$","#"]:
-            justPoS.append(PoS[1])
+        justPoS.append(PoS[1])
 
     # remove conflicts
     UniqPoS = set(justPoS)
