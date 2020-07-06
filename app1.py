@@ -3,6 +3,7 @@
 import sys
 import codecs
 import nltk
+from nltk import bigrams
 from prettytable import PrettyTable
 
 ###############################
@@ -169,9 +170,9 @@ def NounVerb(tokens):
 
 
 ########################################
-############## Top 10 PoS ##############
+############## PoS tagger ##############
 ########################################
-def topTenPoS(tokens):
+def PosTagger(tokens, justTags=False):
 
     # remove punctuations
     noPunctTokens = removePunc(tokens)
@@ -179,8 +180,25 @@ def topTenPoS(tokens):
     # PoS Tagging 
     PosTags = nltk.pos_tag(noPunctTokens)
 
+    # to hold PoS Tags itselves instead of tuples
+    justTags = []
+
+
+    for tags in PosTags:
+        justTags.append(tags[1])
+
+    if justTags:
+        return justTags
+    else:
+        return PosTags
+
+########################################
+############## Top 10 PoS ##############
+########################################
+def topTenPoS(tokens):
+
     # to hold PoS itselves instead of tuples
-    justPoS = []
+    justPoS = PosTagger(tokens, True)
 
     # To hold all PoS types except punctuations
     UniqPoS = []
@@ -190,9 +208,6 @@ def topTenPoS(tokens):
 
     # Sorted PoS Dictionary
     sortedPoS = {}
-
-    for PoS in PosTags:
-        justPoS.append(PoS[1])
 
     # remove conflicts
     UniqPoS = set(justPoS)
@@ -388,6 +403,7 @@ def main(file1,file2):
 
     # Print out the basic table
     print(PoST.get_string(title="TOP TEN   P o S "))
+    #------------------------------------------#
 
 
 main(sys.argv[1], sys.argv[2])
