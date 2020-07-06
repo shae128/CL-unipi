@@ -5,16 +5,16 @@ import codecs
 import nltk
 from prettytable import PrettyTable
 
-
+###############################
+###### Order Dictionary #######
+###############################
+def orderDic(dic):
+    return sorted(dic.items(), key=lambda x: x[1], reverse=True)
 
 ###############################
 # Calculate Sentences' length #
 ###############################
 def sentencesLenCal(sentences):
-
-    ######################################
-    # Declare function's scope variables #
-    ######################################
 
     # Sentences length list
     sentenceLens = []
@@ -60,6 +60,7 @@ def tokensLenCal(tokens):
     # Tokens average length
     return sumTL / len(tokensLens)
 
+
 ###############################################
 # Calculate Vocabulary based on Token Numbers #
 ###############################################
@@ -89,6 +90,7 @@ def vocabCal(tokens, interval):
     finaleList = [tokenSize, vocabSize]
 
     return finaleList
+
 
 ##########################################
 # Calculate HAPAX based on Token Numbers #
@@ -186,7 +188,7 @@ def topTenPoS(tokens):
         PosFreq[PoS] = posCount
 
     # Sort PoS Dictionary based on Values
-    sortedPoS = sorted(PosFreq.items(), key=lambda x: x[1], reverse=True)
+    sortedPoS = orderDic(PosFreq)
 
     return sortedPoS 
 
