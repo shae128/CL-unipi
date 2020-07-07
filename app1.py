@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import codecs
+import math
 import nltk
 from nltk import bigrams
 from nltk import FreqDist
@@ -173,7 +174,7 @@ def NounVerb(tokens):
 ########################################
 ############## PoS tagger ##############
 ########################################
-def PosTagger(tokens, justTags=False):
+def PosTagger(tokens):
 
     # remove punctuations
     noPunctTokens = removePunc(tokens)
@@ -188,10 +189,7 @@ def PosTagger(tokens, justTags=False):
     for tags in PosTags:
         justTags.append(tags[1])
 
-    if justTags:
-        return justTags
-    else:
-        return PosTags
+    return justTags
 
 ########################################
 ############## Top 10 PoS ##############
@@ -199,7 +197,7 @@ def PosTagger(tokens, justTags=False):
 def topTenPoS(tokens):
 
     # to hold PoS itselves instead of tuples
-    justPoS = PosTagger(tokens, True)
+    justPoS = PosTagger(tokens)
 
     # To hold freq of any PoS
     PosFreq = {}
@@ -220,35 +218,27 @@ def topTenPoS(tokens):
 
     return sortedPoS 
 
-########################################
-############## Top 10 PoS ##############
-########################################
-def bigramsProb(tokens):
+################################################
+############## Top 10 PoS-Bigrams ##############
+################################################
+def bigramsProbability(tokens):
 
     # Dictionary to hold bigram's probability
     bigramProb = {}
-    # To hold PoS-tagging Analysis
-    PosTagged = PosTagger(tokens)
-#    print(PosTagged[1000:1200])
-#    print("++++++++++++++++++++++++++++++++++")   
-#    print("++++++++++++++++++++++++++++++++++")   
-    PosTagFreq = FreqDist(PosTagged)
-#    print("++++++++++++++++++++++++++++++++++")   
-#    print("Most common Tags")   
-#    print(type(PosTagFreq['NN']))
 
     # to hold PoS itselves instead of tuples
-    justPoS = PosTagger(tokens, True)
+    justPoS = PosTagger(tokens)
+
+    # To hold PoS-tags Freq
+    PosTagFreq = FreqDist(justPoS)
 
     # remove conflicts
     UniqPoS = set(justPoS)
 
     # To hold PoS-Bigrams
-    PosBigrams = list(bigrams(PosTagged))
-#    print(PosBigrams[1000:1200])   
-#    print("++++++++++++++++++++++++++++++++++")   
-#    print("++++++++++++++++++++++++++++++++++")   
+    PosBigrams = list(bigrams(justPoS))
 
+    # Assign freq to each bigram
     PosBigramsFreq = FreqDist(PosBigrams)
 
     # Find PoS-Bigrams
@@ -262,6 +252,44 @@ def bigramsProb(tokens):
 
     return sortedBigrams[:10]
 
+
+################################################
+############## Top 10 PoS-LMI ##############
+################################################
+def PosLMI(tokens):
+
+    # Dictionary to hold LMI 
+    LMI = {}
+
+    # to hold PoS itselves instead of tuples
+    justPoS = PosTagger(tokens)
+
+    # PoS-Tag Corpus length
+    PosTaggedLen = len(justPoS)
+    
+    # To hold PoS-tags Freq
+    PosTagFreq = FreqDist(justPoS)
+
+    # remove conflicts
+    UniqPoS = set(justPoS)
+
+    # To hold PoS-Bigrams
+    PosBigrams = list(bigrams(justPoS))
+
+    # Assign freq to each bigram
+    PosBigramsFreq = FreqDist(PosBigrams)
+
+    # Find LMI for each bigram and append to LMI Dictionary
+    for bigram in PosBigramsFreq:
+        bigramLMI = math.log( (PosBigramsFreq[bigram] * PosTaggedLen) / ( PosTagFreq[bigram[0]] * PosTagFreq[bigram[1]]), 2)
+        LMI[bigram] = "{:.5f}".format(bigramLMI)
+        
+
+    # sort LMI Dictionary
+    sortedLMI = orderDic(LMI)
+
+    # return top ten
+    return sortedLMI[:10]
 
 ######################
 # The Main Function  #
@@ -454,8 +482,8 @@ def main(file1,file2):
 
 
     # Find all PoS sorted by Freq 
-    bigramsProb1 = bigramsProb(tokens1)
-    bigramsProb2 = bigramsProb(tokens2)
+    bigramsProb1 = bigramsProbability(tokens1)
+    bigramsProb2 = bigramsProbability(tokens2)
 
     # Initializing pretty table
     BigramT = PrettyTable()
@@ -471,6 +499,34 @@ def main(file1,file2):
 
     # Print out the basic table
     print(BigramT.get_string(title="TOP TEN   PoS-Bigrams"))
+    #------------------------------------------#
+
+
+
+    ################################################################
+    ################ Top Ten PoS-Bigrams LMI ###############
+    ################################################################
+
+
+    # Find all PoS sorted by Freq 
+    bigramsLMI1 = PosLMI(tokens1)
+    bigramsLMI2 = PosLMI(tokens2)
+
+    # Initializing pretty table
+    LMIT = PrettyTable()
+    
+    # Adding table's columns
+    LMIT.field_names = ["Rate", file1[6:-4], file2[6:-4]]
+
+    # Filling table's rows
+    for i in range(0,10):
+        temp1 = str(bigramsLMI1[i][0]) + ":   " + str(bigramsLMI1[i][1])
+        temp2 = str(bigramsLMI2[i][0]) + ":   " + str(bigramsLMI2[i][1])
+        LMIT.add_row([i+1, temp1, temp2])
+
+    # Print out the basic table
+    print(LMIT.get_string(title="TOP TEN  PoS-Bigrams LMI"))
+
 
 
 main(sys.argv[1], sys.argv[2])
