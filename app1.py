@@ -4,6 +4,7 @@ import sys
 import codecs
 import nltk
 from nltk import bigrams
+from nltk import FreqDist
 from prettytable import PrettyTable
 
 ###############################
@@ -200,10 +201,7 @@ def topTenPoS(tokens):
     # to hold PoS itselves instead of tuples
     justPoS = PosTagger(tokens, True)
 
-    # To hold all PoS types except punctuations
-    UniqPoS = []
-
-    # To hold freq on any PoS
+    # To hold freq of any PoS
     PosFreq = {}
 
     # Sorted PoS Dictionary
@@ -221,6 +219,49 @@ def topTenPoS(tokens):
     sortedPoS = orderDic(PosFreq)
 
     return sortedPoS 
+
+########################################
+############## Top 10 PoS ##############
+########################################
+def bigramsProb(tokens):
+
+    # Dictionary to hold bigram's probability
+    bigramProb = {}
+    # To hold PoS-tagging Analysis
+    PosTagged = PosTagger(tokens)
+#    print(PosTagged[1000:1200])
+#    print("++++++++++++++++++++++++++++++++++")   
+#    print("++++++++++++++++++++++++++++++++++")   
+    PosTagFreq = FreqDist(PosTagged)
+#    print("++++++++++++++++++++++++++++++++++")   
+#    print("Most common Tags")   
+#    print(type(PosTagFreq['NN']))
+
+    # to hold PoS itselves instead of tuples
+    justPoS = PosTagger(tokens, True)
+
+    # remove conflicts
+    UniqPoS = set(justPoS)
+
+    # To hold PoS-Bigrams
+    PosBigrams = list(bigrams(PosTagged))
+#    print(PosBigrams[1000:1200])   
+#    print("++++++++++++++++++++++++++++++++++")   
+#    print("++++++++++++++++++++++++++++++++++")   
+
+    PosBigramsFreq = FreqDist(PosBigrams)
+
+    # Find PoS-Bigrams
+    for tag in UniqPoS:
+        for bigram in PosBigramsFreq:
+            if tag == bigram[0]:
+                # Calculate bigram's probability 
+                bigramProb[bigram] = "{:.5f}".format(PosBigramsFreq[bigram]/PosTagFreq[tag])
+
+    sortedBigrams = orderDic(bigramProb)
+
+    return sortedBigrams[:10]
+
 
 ######################
 # The Main Function  #
@@ -404,6 +445,32 @@ def main(file1,file2):
     # Print out the basic table
     print(PoST.get_string(title="TOP TEN   P o S "))
     #------------------------------------------#
+
+
+
+    ################################################################
+    ################ Top Ten PoS-Bigrams probability ###############
+    ################################################################
+
+
+    # Find all PoS sorted by Freq 
+    bigramsProb1 = bigramsProb(tokens1)
+    bigramsProb2 = bigramsProb(tokens2)
+
+    # Initializing pretty table
+    BigramT = PrettyTable()
+    
+    # Adding table's columns
+    BigramT.field_names = ["Rate", file1[6:-4], file2[6:-4]]
+
+    # Filling table's rows
+    for i in range(0,10):
+        temp1 = str(bigramsProb1[i][0]) + ":   " + str(bigramsProb1[i][1])
+        temp2 = str(bigramsProb2[i][0]) + ":   " + str(bigramsProb2[i][1])
+        BigramT.add_row([i+1, temp1, temp2])
+
+    # Print out the basic table
+    print(BigramT.get_string(title="TOP TEN   PoS-Bigrams"))
 
 
 main(sys.argv[1], sys.argv[2])
