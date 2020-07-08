@@ -2,7 +2,7 @@
 This is a very simple Computational linguistics project for University of Pisa.
 
 
-The first App will analys and compare the below items for any two text in UTF-8 encoding:
+The first App will analyse and compare the below items for any two text in UTF-8 encoding:
   - Total number of tokens and sentences
   - Average length of sentences based on number of words
   - Average length of tokens based on number of charachters
@@ -11,5 +11,5 @@ The first App will analys and compare the below items for any two text in UTF-8 
   - Top Ten Part-of-Speech(PoS) tags
   - Top Ten Part-of-Spech(PoS) bigrams with:
     * Highest probability
-    * Highest colocations in between in terms of Local-Mitual-Information(LMI)
+    * Highest colocations in between them, in terms of Local-Mitual-Information(LMI)
     
