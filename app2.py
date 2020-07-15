@@ -4,8 +4,6 @@ import sys
 import codecs
 import math
 import nltk
-from nltk import bigrams
-from nltk import FreqDist
 from prettytable import PrettyTable
 
 ###############################
@@ -63,6 +61,71 @@ def topTenNE(senteces):
 
 
 
+####################################################
+####### Find and print Max/Min sentence length #####
+####################################################
+def Min_Max_sent(dic, title):
+
+    print(3*"\n")
+    for i in range(8, 26, 4):
+        print(i*"*")
+    print("Top ten name entities of:", title )
+    for i in range(24, 4, -4):
+        print(i*"*")
+
+
+    for Name in dic:
+        minLen = Name['senteces'][0]
+        maxLen = Name['senteces'][0]
+
+        for sentence in Name['senteces']:
+            if len(sentence) > len(maxLen):
+                maxLen = sentence
+            if len(sentence) < len(minLen):
+                minLen = sentence
+
+        print(2*"\n")
+        print(25*"=")
+        tempSTR = "The name is: " + Name['Name'] + " ===> " + str(Name['count']) 
+        print(tempSTR)
+        print("")
+        print(u'\u2193'*3, "The shortes sentence which contains".upper(), Name['Name'], u'\u2193'*3)
+        print("")
+        print(minLen)
+        print(2*"\n")
+        print(u'\u2193'*3, "The longest sentence which contains".upper(), Name['Name'], u'\u2193'*3)
+        print()
+        print(maxLen)
+        print(25*"=")
+
+
+#    # Initializing pretty table
+#    finale_table = PrettyTable()
+#    
+#    # Adding table's columns
+#    finale_table.field_names = ["Name", "Appearance", "Shorter Sentence", "Longest Sentence"]
+#
+#    # finding senteces with max and min Length which contain the Name
+#    for Name in dic:
+#        minLen = Name['senteces'][0]
+#        maxLen = Name['senteces'][0]
+#
+#        for sentence in Name['senteces']:
+#            if len(sentence) > len(maxLen):
+#                maxLen = sentence
+#            if len(sentence) < len(minLen):
+#                minLen = sentence
+#
+#        # Filling table's rows
+#        finale_table.add_row([Name['Name'], Name['count'], minLen, maxLen])
+#
+#
+#    # Print out the basic table
+#    print(finale_table.get_string(title="Test"))
+
+
+
+
 ######################
 # The Main Functi n  #
 ######################
@@ -82,12 +145,13 @@ def main(file1,file2):
     sentences1 = sent_tokenizer.tokenize(rawFile1)
     sentences2 = sent_tokenizer.tokenize(rawFile2)
 
-    #tokenize in words
-#    tokens1 = nltk.word_tokenize(rawFile1)
-#    tokens2 = nltk.word_tokenize(rawFile2)
-#
     # Find Person names
     topTenPerson1 = topTenNE(sentences1)
     topTenPerson2 = topTenNE(sentences2)
+
+    # Find max/min sentence and print out
+    Min_Max_sent(topTenPerson1, file1[6:-4])
+    Min_Max_sent(topTenPerson2, file2[6:-4])
+
 
 main(sys.argv[1], sys.argv[2])
