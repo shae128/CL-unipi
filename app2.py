@@ -6,7 +6,6 @@ import codecs
 import math
 import nltk
 from nltk import FreqDist
-from prettytable import PrettyTable
 
 ###############################
 ###### Order Dictionary #######
