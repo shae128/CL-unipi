@@ -332,7 +332,7 @@ def main(file1,file2):
     basicT = PrettyTable()
     
     # Adding table's columns
-    basicT.field_names = ["Metrics", file1[6:-4], file2[6:-4]]
+    basicT.field_names = ["Metrics", file1[:-4], file2[:-4]]
 
     # Filling table's rows
     basicT.add_row(["Tokens", len(tokens1), len(tokens2)])
@@ -357,7 +357,7 @@ def main(file1,file2):
     vocabT = PrettyTable()
     
     # Adding table's columns
-    vocabT.field_names = ["Tokens", file1[6:-4], file2[6:-4]]
+    vocabT.field_names = ["Tokens", file1[:-4], file2[:-4]]
 
     # Find the bigger text size
     intervalSize1 = len(vocabSize1[0]) 
@@ -395,7 +395,7 @@ def main(file1,file2):
     hapaxT = PrettyTable()
     
     # Adding table's columns
-    hapaxT.field_names = ["Tokens", file1[6:-4], file2[6:-4]]
+    hapaxT.field_names = ["Tokens", file1[:-4], file2[:-4]]
 
 
     # Find the bigger text size
@@ -438,9 +438,9 @@ def main(file1,file2):
     NVT.field_names = ["File", "Nouns", "Verbs", "Relation"]
 
     # Filling table's rows
-    NVT.add_row([file1[6:-4], NV1[0], NV1[1], NV1[2]])
-    NVT.add_row([len(file1[6:-4])*"-", "", "", ""])
-    NVT.add_row([file2[6:-4], NV2[0], NV2[1], NV2[2]])
+    NVT.add_row([file1[:-4], NV1[0], NV1[1], NV1[2]])
+    NVT.add_row([len(file1[:-4])*"-", "", "", ""])
+    NVT.add_row([file2[:-4], NV2[0], NV2[1], NV2[2]])
 
     # Print out the basic table
     print(NVT.get_string(title="NOUNS AND VERBS RELATION"))
@@ -462,7 +462,7 @@ def main(file1,file2):
     PoST = PrettyTable()
     
     # Adding table's columns
-    PoST.field_names = ["Rate", file1[6:-4], file2[6:-4]]
+    PoST.field_names = ["Rate", file1[:-4], file2[:-4]]
 
     # Filling table's rows
     for i in range(0,10):
@@ -489,7 +489,7 @@ def main(file1,file2):
     BigramT = PrettyTable()
     
     # Adding table's columns
-    BigramT.field_names = ["Rate", file1[6:-4], file2[6:-4]]
+    BigramT.field_names = ["Rate", file1[:-4], file2[:-4]]
 
     # Filling table's rows
     for i in range(0,10):
@@ -516,7 +516,7 @@ def main(file1,file2):
     LMIT = PrettyTable()
     
     # Adding table's columns
-    LMIT.field_names = ["Rate", file1[6:-4], file2[6:-4]]
+    LMIT.field_names = ["Rate", file1[:-4], file2[:-4]]
 
     # Filling table's rows
     for i in range(0,10):

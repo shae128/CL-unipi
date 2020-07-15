@@ -78,9 +78,9 @@ def cal_markov0(corpusLen, freqDest, sentences):
 
 
 ####################################################
-####### Find and print Max/Min sentence length #####
+####### Per Sentence Analysis for each NE ##########
 ####################################################
-def Min_Max_sent(dic, title, corpusSent):
+def per_sent_analisys(dic, title, corpusSent):
 
     NE_details = {}
     date_pattern = "([0-9]{2}[-/][0-9]{2}[/-][0-9]{4})"
@@ -101,12 +101,23 @@ def Min_Max_sent(dic, title, corpusSent):
 
     
     print(3*"\n")
-    for i in range(8, 26, 4):
+    for i in range(8, 40, 4):
         print(i*"*")
-    print("Top ten name entities of:", title )
-    for i in range(24, 4, -4):
+    print()
+    print("Book Title:", title )
+    print()
+    for i in range(36, 4, -4):
         print(i*"*")
 
+
+    print(2*"\n")
+    print(44*"=")
+    print(u'\u2193'*14, "     ", "Top Ten Person Name Entities with highest frequency".upper(),"     ", u'\u2193'*14)
+    print(44*"=")
+    print(2*"\n")
+
+
+    order_number = 1
 
     for NE in dic:
 
@@ -196,10 +207,9 @@ def Min_Max_sent(dic, title, corpusSent):
             'Markov' : sentencesProbSorted
         }
 
-
-        print(2*"\n")
+        print()
         print(25*"=")
-        tempSTR = "The name is: " + NE['Name'] + " ===> " + str(NE['count']) 
+        tempSTR = str(order_number) + ". " + NE['Name'] + " ===> " + str(NE['count']) 
         print(tempSTR)
         print("")
 
@@ -244,86 +254,14 @@ def Min_Max_sent(dic, title, corpusSent):
 
         print(u'\u2193'*3, "     ", " Markov(0) sentence with highest probability ".upper(), "     ",  u'\u2193'*3)
         if len(NE_details[NE['Name']]['Markov']) is not 0:
-            print("Sentence:", NE_details[NE['Name']]['Markov'][0][0])
-            print("probability:", "===>", NE_details[NE['Name']]['Markov'][0][1])
+            print()
+            print(8*" ", "Sentence:", NE_details[NE['Name']]['Markov'][0][0])
+            print(8*" ", "probability:", "===>", NE_details[NE['Name']]['Markov'][0][1])
         print(2*"\n")
-
-
         print(25*"=")
 
 
-
-
-
-###################################
-####### Analysis for each NE  #####
-###################################
-def NE_Analysis(dic):
-
-    NE_details = {}
-
-    for NE in dic:
-        #date_pattern = re.search("([0-9]{2}[-/][0-9]{2}[/-][0-9]{4})", test)
-        places = []
-        person = []
-        nouns = []
-        verbs = []
-        dates = []
-
-        for sentence in NE['senteces'] :
-            tokens = nltk.word_tokenize(sentence)
-            PosTags = nltk.pos_tag(tokens)
-            ne_chunks = nltk.ne_chunk(PosTags)
-    
-            # finding dates
-            date_numbers = re.findall(r"([0-9]{2}[-/][0-9]{2}[/-][0-9]{4})", sentence)
-            if len(date_numbers) is not 0:
-                dates.append(date_numbers)
-            
-            # finding days and monthes
-            for token in tokens:
-                if token in days_monthes:
-                    dates.append(token)
-
-            # Finding nouns and verbs
-            for token in PosTags:
-                if token[1] in ['NN','NNS','NP','NPS']:
-                    nouns.append(token[0])
-                elif token[1] in ['VB','VBD','VBG','VBN','VBP','VBZ']:
-                    verbs.append(token[0])
-
-
-            # Findig places and person names
-            for node in ne_chunks:
-                try:
-                    node.label()
-                except AttributeError:
-                    pass
-                else:
-                    if node.label() == "GPE":
-                        for leave in node.leaves():
-                            places.append(leave[0])
-                    if node.label() == "PERSON":
-                        for leave in node.leaves():
-                            person.append(leave[0])
- 
-            places_freq = FreqDist(places)
-            person_freq = FreqDist(person)
-            nouns_freq = FreqDist(nouns)
-            verbs_freq = FreqDist(verbs)
-
-        if len(dates) is not 0:
-            dates = set(dates)
-        
-        NE_details[NE['Name']] = {
-            'Places': places_freq.most_common(10),
-            'Person': person_freq.most_common(10),
-            'Nouns': nouns_freq.most_common(10),
-            'Verbs': verbs_freq.most_common(10),
-            'Dates' : dates
-        }
-
-    return(NE_details)
+        order_number += 1
 
 
 ######################
@@ -334,6 +272,7 @@ def main(file1,file2):
     #open files
     inputFile1= codecs.open(file1, 'r', 'utf-8')
     inputFile2= codecs.open(file2, 'r', 'utf-8')
+
     #read files
     rawFile1 = inputFile1.read()
     rawFile2 = inputFile2.read()
@@ -341,7 +280,7 @@ def main(file1,file2):
     #call english.pickle
     sent_tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 
-    #tokenize in sentences
+    #tokenizing sentences
     sentences1 = sent_tokenizer.tokenize(rawFile1)
     sentences2 = sent_tokenizer.tokenize(rawFile2)
 
@@ -349,44 +288,9 @@ def main(file1,file2):
     topTenPerson1 = topTenNE(sentences1)
     topTenPerson2 = topTenNE(sentences2)
 
-    # Find max/min sentence and print out
-    Min_Max_sent(topTenPerson1, file1[:-4], sentences1)
-    Min_Max_sent(topTenPerson2, file2[:-4], sentences2)
-
-
-    # Per sentence Analysis
-    #jsent_analysis1 = NE_Analysis(topTenPerson1)
-    #sent_analysis2 = NE_Analysis(topTenPerson2)
-
+    # Analysis of Name Entities and their Sentences
+    per_sent_analisys(topTenPerson1, file1[:-4], sentences1)
+    per_sent_analisys(topTenPerson2, file2[:-4], sentences2)
 
 
 main(sys.argv[1], sys.argv[2])
-
-
-#    # Initializing pretty table
-#    finale_table = PrettyTable()
-#    
-#    # Adding table's columns
-#    finale_table.field_names = ["Name", "Appearance", "Shorter Sentence", "Longest Sentence"]
-#
-#    # finding senteces with max and min Length which contain the Name
-#    for Name in dic:
-#        minLen = Name['senteces'][0]
-#        maxLen = Name['senteces'][0]
-#
-#        for sentence in Name['senteces']:
-#            if len(sentence) > len(maxLen):
-#                maxLen = sentence
-#            if len(sentence) < len(minLen):
-#                minLen = sentence
-#
-#        # Filling table's rows
-#        finale_table.add_row([Name['Name'], Name['count'], minLen, maxLen])
-#
-#
-#    # Print out the basic table
-#    print(finale_table.get_string(title="Test"))
-
-
-
-
